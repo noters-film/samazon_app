@@ -56,12 +56,12 @@ class UserController extends Controller
 
         return view('users.edit_address', compact('user'));
     }
-
+    
     public function edit_password()
     {
         return view('users.edit_password');
     }
-
+    
     public function update_password(Request $request)
     {
         $user = Auth::user();
@@ -73,9 +73,8 @@ class UserController extends Controller
             return redirect()->route('mypage.edit_password');
         }
 
-        return redirect()->route('mypage');
+    return redirect()->route('mypage');
     }
-
     public function favorite()
     {
         $user = Auth::user();
@@ -84,5 +83,4 @@ class UserController extends Controller
 
         return view('users.favorite', compact('favorites'));
     }
-
 }
