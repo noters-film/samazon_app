@@ -102,6 +102,8 @@ class ProductController extends Controller
     {
         $product->delete();
 
-        return redirect()->route('products.index');
+        $reviews = $product->reviews()->get();
+
+        return view('products.show', compact('product', 'reviews'));
     }
 }
