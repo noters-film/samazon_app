@@ -14,8 +14,9 @@
 Route::get('/', 'WebController@index');
 
 Route::get('users/carts', 'CartController@index')->name('carts.index');
-
 Route::post('users/carts', 'CartController@store')->name('carts.store');
+Route::put('users/carts', 'CartController@update')->name('carts.update');
+Route::delete('users/carts', 'CartController@destroy')->name('carts.destroy');
 
 Route::get('users/mypage', 'UserController@mypage')->name('mypage');
 Route::get('users/mypage/edit', 'UserController@edit')->name('mypage.edit');
@@ -36,14 +37,14 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/dashboard', 'DashboardController@index')->middleware('auth:admins');
 
-Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function () {
-  Route::get('login', 'Dashboard\Auth\LoginController@showLoginForm')->name('login');
-  Route::post('login', 'Dashboard\Auth\LoginController@login')->name('login');
-  Route::resource('major_categories', 'Dashboard\MajorCategoryController')->middleware('auth:admins');
-  Route::resource('categories', 'Dashboard\CategoryController')->middleware('auth:admins');
-  Route::resource('products', 'Dashboard\ProductController')->middleware('auth:admins');
+Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function() {
+    Route::get('login', 'Dashboard\Auth\LoginController@showLoginForm')->name('login');
+    Route::post('login', 'Dashboard\Auth\LoginController@login')->name('login');
+    Route::resource('products', 'Dashboard\ProductController')->middleware('auth:admins');
+    Route::resource('major_categories', 'Dashboard\MajorCategoryController')->middleware('auth:admins');
+    Route::resource('users', 'Dashboard\UserController')->middleware('auth:admins');
 });
 
 if (env('APP_ENV') === 'production') {
- URL::forceScheme('https');
+    URL::forceScheme('https');
 }
