@@ -5,44 +5,45 @@
   use App\Product;
   use App\Category;
   use Illuminate\Http\Request;
+  use Illuminate\Support\Facades\Storage;
   use App\Http\Controllers\Controller;
   
-  class ProductController extends Controller
+    class ProductController extends Controller
   {
       /**
        * Display a listing of the resource.
        *
        * @return \Illuminate\Http\Response
        */
-     public function index(Request $request)
+      public function index(Request $request)
       {
-         $sort_query = [];
-         $sorted = "";
-
-         if ($request->sort !== null) {
-             $slices = explode(' ', $request->sort);
-             $sort_query[$slices[0]] = $slices[1];
-             $sorted = $request->sort;
-         }
-
-         if ($request->keyword !== null) {
-             $keyword = rtrim($request->keyword);
-             $total_count = Product::where('name', 'like', "%{$keyword}%")->orwhere('id', "{$keyword}")->count();
-             $products = Product::where('name', 'like', "%{$keyword}%")->orwhere('id', "{$keyword}")->sortable($sort_query)->paginate(15);
-         } else {
-             $keyword = "";
-             $total_count = Product::count();
-             $products = Product::sortable($sort_query)->paginate(15);
-         }
-
-         $sort = [
-             '価格の安い順' => 'price asc',
-             '価格の高い順' => 'price desc',
-             '出品の古い順' => 'updated_at asc',
-             '出品の新しい順' => 'updated_at desc'
-         ];
-
-         return view('dashboard.products.index', compact('products', 'sort', 'sorted', 'total_count', 'keyword'));
+          $sort_query = [];
+          $sorted = "";
+  
+          if ($request->sort !== null) {
+              $slices = explode(' ', $request->sort);
+              $sort_query[$slices[0]] = $slices[1];
+              $sorted = $request->sort;
+          }
+  
+          if ($request->keyword !== null) {
+              $keyword = rtrim($request->keyword);
+              $total_count = Product::where('name', 'like', "%{$keyword}%")->orwhere('id', "{$keyword}")->count();
+              $products = Product::where('name', 'like', "%{$keyword}%")->orwhere('id', "{$keyword}")->sortable($sort_query)->paginate(15);
+          } else {
+              $keyword = "";
+              $total_count = Product::count();
+              $products = Product::sortable($sort_query)->paginate(15);
+          }
+  
+          $sort = [
+              '価格の安い順' => 'price asc',
+              '価格の高い順' => 'price desc',
+              '出品の古い順' => 'updated_at asc',
+              '出品の新しい順' => 'updated_at desc'
+          ];
+  
+          return view('dashboard.products.index', compact('products', 'sort', 'sorted', 'total_count', 'keyword'));
       }
   
       /**
@@ -52,9 +53,9 @@
        */
       public function create()
       {
-         $categories = Category::all();
-
-         return view('dashboard.products.create', compact('categories'));
+          $categories = Category::all();
+  
+          return view('dashboard.products.create', compact('categories'));
       }
   
       /**
@@ -65,35 +66,41 @@
        */
       public function store(Request $request)
       {
-         $request->validate([
-             'name' => 'required',
-             'price' => 'required',
-             'description' => 'required',
-         ],
-         [
-             'name.required' => '商品名は必須です。',
-             'price.required' => '価格は必須です。',
-             'description.required' => '商品説明は必須です。',
-         ]);
+          $request->validate([
+              'name' => 'required',
+              'price' => 'required',
+              'description' => 'required',
+          ],
+          [
+              'name.required' => '商品名は必須です。',
+              'price.required' => '価格は必須です。',
+              'description.required' => '商品説明は必須です。',
+          ]);
 
-        $product = new Product();
-        $product->name = $request->input('name');
-        $product->description = $request->input('description');
-        $product->price = $request->input('price');
-        $product->category_id = $request->input('category_id');
-        if ($request->input('recommend') == 'on') {
-            $product->recommend_flag = true;
-        } else {
-           $product->recommend_flag = false;
-        }
-        if ($request->input('carriage') == 'on') {
-            $product->carriage_flag = true;
-        } else {
-            $product->carriage_flag = false;
-        }
-        $product->save();
-
-         return redirect()->route('dashboard.products.index');
+          $product = new Product();
+          $product->name = $request->input('name');
+          $product->description = $request->input('description');
+          $product->price = $request->input('price');
+          $product->category_id = $request->input('category_id');
+          if ($request->input('recommend') == 'on') {
+              $product->recommend_flag = true;
+          } else {
+              $product->recommend_flag = false;
+          }
+         if ($request->file('image') !== null) {
+             $image = $request->file('image')->store('public/products');
+             $product->image = basename($image);
+         } else {
+             $product->image = '';
+         }
+          if ($request->input('carriage') == 'on') {
+              $product->carriage_flag = true;
+          } else {
+              $product->carriage_flag = false;
+          }
+          $product->save();
+  
+          return redirect()->route('dashboard.products.index');
       }
   
       /**
@@ -102,11 +109,11 @@
        * @param  \App\Product  $product
        * @return \Illuminate\Http\Response
        */
-     public function edit(Product $product)
+      public function edit(Product $product)
       {
-         $categories = Category::all();
-
-         return view('dashboard.products.edit', compact('product', 'categories'));
+          $categories = Category::all();
+  
+          return view('dashboard.products.edit', compact('product', 'categories'));
       }
   
       /**
@@ -116,37 +123,44 @@
        * @param  \App\Product  $product
        * @return \Illuminate\Http\Response
        */
-     public function update(Request $request, Product $product)
+      public function update(Request $request, Product $product)
       {
-         $request->validate([
-             'name' => 'required',
-             'price' => 'required',
-             'description' => 'required',
-         ],
-         [
-             'name.required' => '商品名は必須です。',
-             'price.required' => '価格は必須です。',
-             'description.required' => '商品説明は必須です。',
-         ]);
+          $request->validate([
+              'name' => 'required',
+              'price' => 'required',
+              'description' => 'required',
+          ],
+          [
+              'name.required' => '商品名は必須です。',
+              'price.required' => '価格は必須です。',
+              'description.required' => '商品説明は必須です。',
+          ]);
 
-        $product->name = $request->input('name');
-        $product->description = $request->input('description');
-        $product->price = $request->input('price');
-        $product->category_id = $request->input('category_id');
-        if ($request->input('recommend') == 'on') {
-            $product->recommend_flag = true;
-        } else {
-            $product->recommend_flag = false;
-        }
-       if ($request->input('carriage') == 'on') {
-           $product->carriage_flag = true;
-       } else {
-           $product->carriage_flag = false;
-       }
-        
+          $product->name = $request->input('name');
+          $product->description = $request->input('description');
+          $product->price = $request->input('price');
+          $product->category_id = $request->input('category_id');
+          if ($request->input('recommend') == 'on') {
+              $product->recommend_flag = true;
+          } else {
+              $product->recommend_flag = false;
+          }
+         if ($request->hasFile('image')) {
+             $image = $request->file('image')->store('public/products');
+             $product->image = basename($image);
+         } else if(isset($product->image)) {
+             // do nothing
+         } else {
+             $product->image = '';
+         }
+          if ($request->input('carriage') == 'on') {
+              $product->carriage_flag = true;
+          } else {
+              $product->carriage_flag = false;
+          }
           $product->update();
-
-         return redirect()->route('dashboard.products.index');
+  
+          return redirect()->route('dashboard.products.index');
       }
   
       /**
@@ -155,10 +169,10 @@
        * @param  \App\Product  $product
        * @return \Illuminate\Http\Response
        */
-     public function destroy(Product $product)
+      public function destroy(Product $product)
       {
-         $product->delete();
-
-         return redirect()->route('dashboard.products.index');
+          $product->delete();
+  
+          return redirect()->route('dashboard.products.index');
       }
   }

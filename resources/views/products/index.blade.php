@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
 <div class="row">
     <div class="col-2">
         @component('components.sidebar', ['categories' => $categories, 'major_category_names' => $major_category_names])
@@ -10,22 +9,22 @@
     <div class="col-9">
         <div class="container">
             @if ($category !== null)
-                <a href="/">トップ</a> > <a href="#">{{ $category->major_category_name }}</a> > {{ $category->name }}
-                <h1>{{ $category->name }}の商品一覧{{$total_count}}件</h1>
+            <a href="/">トップ</a> > <a href="#">{{ $category->major_category_name }}</a> > {{ $category->name }}
+            <h1>{{ $category->name }}の商品一覧{{$total_count}}件</h1>
 
-                <form method="GET" action="{{ route('products.index')}}" class="form-inline">
-                    <input type="hidden" name="category" value="{{ $category->id }}">
-                    並び替え
-                    <select name="sort" onChange="this.form.submit();" class="form-inline ml-2">
-                        @foreach ($sort as $key => $value)
-                            @if ($sorted == $value)
-                               <option value=" {{ $value}}" selected>{{ $key }}</option>
-                            @else
-                               <option value=" {{ $value}}">{{ $key }}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                </form>
+            <form method="GET" action="{{ route('products.index')}}" class="form-inline">
+                <input type="hidden" name="category" value="{{ $category->id }}">
+                並び替え
+                <select name="sort" onChange="this.form.submit();" class="form-inline ml-2">
+                    @foreach ($sort as $key => $value)
+                    @if ($sorted == $value)
+                    <option value=" {{ $value}}" selected>{{ $key }}</option>
+                    @else
+                    <option value=" {{ $value}}">{{ $key }}</option>
+                    @endif
+                    @endforeach
+                </select>
+            </form>
             @endif
         </div>
         <div class="container mt-4">
@@ -33,7 +32,11 @@
                 @foreach($products as $product)
                 <div class="col-3">
                     <a href="{{route('products.show', $product)}}">
-                        <img src="{{ asset('img/dummy.png')}}" class="img-thumbnail">
+                       @if ($product->image !== "")
+                       <img src="{{ asset('storage/products/'.$product->image) }}" class="img-thumbnail">
+                       @else
+                       <img src="{{ asset('img/dummy.png')}}" class="img-thumbnail">
+                       @endif
                     </a>
                     <div class="row">
                         <div class="col-12">
@@ -47,8 +50,8 @@
                 @endforeach
             </div>
         </div>
+
         {{ $products->appends(request()->query())->links() }}
-        <a href="{{route('products.create')}}" class="btn btn-primary m-4">New Product</a>
     </div>
 </div>
 @endsection
