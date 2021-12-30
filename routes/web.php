@@ -28,6 +28,8 @@ Route::put('users/mypage/password', 'UserController@update_password')->name('myp
 Route::delete('users/mypage/delete', 'UserController@destroy')->name('mypage.destroy');
 Route::get('users/mypage/cart_history', 'UserController@cart_history_index')->name('mypage.cart_history');
 Route::get('users/mypage/cart_history/{num}', 'UserController@cart_history_show')->name('mypage.cart_history_show');
+Route::get('users/mypage/register_card', 'UserController@register_card')->name('mypage.register_card');
+Route::post('users/mypage/token', 'UserController@token')->name('mypage.token');
 
 Route::post('products/{product}/reviews', 'ReviewController@store');
 
