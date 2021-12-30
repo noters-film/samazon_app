@@ -76,12 +76,17 @@
              'description.required' => '商品説明は必須です。',
          ]);
 
-         $product = new Product();
-         $product->name = $request->input('name');
-         $product->description = $request->input('description');
-         $product->price = $request->input('price');
-         $product->category_id = $request->input('category_id');
-         $product->save();
+        $product = new Product();
+        $product->name = $request->input('name');
+        $product->description = $request->input('description');
+        $product->price = $request->input('price');
+        $product->category_id = $request->input('category_id');
+        if ($request->input('recommend') == 'on') {
+            $product->recommend_flag = true;
+        } else {
+           $product->recommend_flag = false;
+        }
+          $product->save();
 
          return redirect()->route('dashboard.products.index');
       }
@@ -119,11 +124,16 @@
              'description.required' => '商品説明は必須です。',
          ]);
 
-         $product->name = $request->input('name');
-         $product->description = $request->input('description');
-         $product->price = $request->input('price');
-         $product->category_id = $request->input('category_id');
-         $product->update();
+        $product->name = $request->input('name');
+        $product->description = $request->input('description');
+        $product->price = $request->input('price');
+        $product->category_id = $request->input('category_id');
+        if ($request->input('recommend') == 'on') {
+            $product->recommend_flag = true;
+        } else {
+            $product->recommend_flag = false;
+        }
+          $product->update();
 
          return redirect()->route('dashboard.products.index');
       }
